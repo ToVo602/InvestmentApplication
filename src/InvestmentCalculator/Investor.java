@@ -15,20 +15,20 @@ public class Investor {
         this.durationInMonths = durationInMonths;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public void setName(String name){
         this.name = name;
     }
 
-    public double getStartingCapital() {
-        return startingCapital;
+    public String getName(){
+        return this.name;
     }
 
-    public void setStartingCapital(double startingCapital) {
+    public void setStartingCapital(double startingCapital){
         this.startingCapital = startingCapital;
+    }
+
+    public double getStartingCapital(){
+        return this.startingCapital;
     }
 
     public double getSavingsPerMonth() {
@@ -52,9 +52,7 @@ public class Investor {
     }
 
     public double calculateInvestedCapital(){
-        double investedCapital = this.startingCapital + this.savingsPerMonth * this.durationInMonths;
-        System.out.printf("%s will invest %.2f€\n", this.name, investedCapital);
-        return investedCapital;
+        return this.startingCapital + this.savingsPerMonth * this.durationInMonths;
     }
 
     public double calculateLifetimeAssetVolume(double estimatedAnnualReturn){
@@ -64,7 +62,6 @@ public class Investor {
             double monthlyGains = (this.savingsPerMonth + currentAssetVolume) * monthlyReturn + this.savingsPerMonth;
             currentAssetVolume += monthlyGains;
         }
-        System.out.printf("%s will have %.2f€\n", this.name, currentAssetVolume);
         return currentAssetVolume;
     }
 }
