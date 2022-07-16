@@ -1,7 +1,7 @@
-package InvestmentCalculator;
+package investment_calculator;
 
 public class Investor {
-    // private final int MONTHS_PER_YEAR = 12;
+    //private final int MONTHS_PER_YEAR = 12;
 
     private String name;
     private double startingCapital;
