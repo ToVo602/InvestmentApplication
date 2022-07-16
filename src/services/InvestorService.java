@@ -47,7 +47,7 @@ public class InvestorService implements IInvestorService {
         TimeSeries<LocalDate, Double> returnSeries = new TimeSeries<>();
         LocalDate currentDate = LocalDate.now();
 
-        for(double number : discountedAnnualIncomes){
+        for(int i = 0; i < discountedAnnualIncomes.size(); i++){
             double accDiscountedIncomes = discountedAnnualIncomes
                     .stream()
                     .reduce(0.0, (subtotal, d) -> subtotal + d);
@@ -55,7 +55,7 @@ public class InvestorService implements IInvestorService {
             returnSeries.addDataPoint(new TimeSeriesDataPoint<>(currentDate, accDiscountedIncomes));
 
             currentDate = currentDate.plusYears(1L);
-            discountedAnnualIncomes.remove(number);
+            discountedAnnualIncomes.remove(0);
         }
         return returnSeries;
     }
