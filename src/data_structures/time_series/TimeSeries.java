@@ -12,6 +12,17 @@ public class TimeSeries<T, D> implements Iterable {
         this.dataPoints = new LinkedList<>();
     }
 
+    public int size(){
+        return this.size;
+    }
+
+    public TimeSeriesDataPoint<T, D> getDataPointAtIndex(int index){
+        if(index < 0 || index >= this.size){
+            throw new IndexOutOfBoundsException();
+        }
+        return this.dataPoints.get(index);
+    }
+
     public void addDataPoint(TimeSeriesDataPoint<T, D> dataPoint){
         this.dataPoints.add(dataPoint);
         this.size++;
@@ -20,7 +31,6 @@ public class TimeSeries<T, D> implements Iterable {
     public TimeSeriesDataPoint<T, D> getLastDataPoint(){
         return this.dataPoints.get(this.dataPoints.size() - 1);
     }
-
 
     @Override
     public Iterator iterator() {

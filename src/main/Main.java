@@ -22,5 +22,16 @@ public class Main {
         InvestorService investorService = new InvestorService();
         TimeSeries<LocalDate, Double> assetVolumeDevelopment = investorService.getAssetVolumeDevelopment(investor, 0.07);
         TimeSeries<LocalDate, Double> humanCapitalDevelopment = investorService.getHumanCapitalDevelopment(investor, 0.015);
+
+        Integer yearsUntilHalf = null;
+
+        for (int i = 0; i < assetVolumeDevelopment.size(); i++) {
+            if(assetVolumeDevelopment.getDataPointAtIndex(i).getData() / humanCapitalDevelopment.getDataPointAtIndex(i).getData() > 1){
+                yearsUntilHalf = i;
+                break;
+            }
+        }
+
+        System.out.println(yearsUntilHalf);
     }
 }

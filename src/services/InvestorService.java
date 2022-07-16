@@ -14,40 +14,38 @@ public class InvestorService implements IInvestorService {
 
     @Override
     public TimeSeries<LocalDate, Double> getAssetVolumeDevelopment(Investor investor, double estimatedAnnualReturn) {
-        TimeSeries<LocalDate, Double> returnSeries = new TimeSeries<>();
         double monthlyReturn = InvestorServices.convertAnnualIntoMonthlyReturnRate(estimatedAnnualReturn);
         int yearsUntilRetirement = investor.getPlannedRetirementAge() - investor.getAge();
+        double annualIncomeIncreaseRate = investor.getAnnualIncomeIncreaseRate();
+        double monthlySavingRate = investor.getMonthlySavingRate();
 
         LocalDate currentDate = LocalDate.now();
         double assetVolume = investor.getCurrentInvestableCapital();
         double monthlyNetIncome = investor.getCurrentAnnualNetIncome() / 12;
-        double monthlySavings = monthlyNetIncome * investor.getMonthlySavingRate();
+        double monthlySavings = monthlyNetIncome * monthlySavingRate;
+        TimeSeries<LocalDate, Double> returnSeries = new TimeSeries<>();
 
         for (int i = 0; i < yearsUntilRetirement; i++) {
             for (int j = 0; j < 12; j++) {
                 double monthlyGains = (assetVolume + monthlySavings) * monthlyReturn + monthlySavings;
                 assetVolume += monthlyGains;
-                returnSeries.addDataPoint(new TimeSeriesDataPoint<>(currentDate, assetVolume));
-                currentDate = currentDate.plusMonths(1L);
             }
-            monthlyNetIncome += monthlyNetIncome * investor.getAnnualIncomeIncreaseRate();
-            monthlySavings = monthlyNetIncome * investor.getMonthlySavingRate();
+            returnSeries.addDataPoint(new TimeSeriesDataPoint<>(currentDate, assetVolume));
+            currentDate = currentDate.plusYears(1L);
+            monthlyNetIncome += monthlyNetIncome * annualIncomeIncreaseRate;
+            monthlySavings = monthlyNetIncome * monthlySavingRate;
         }
         return returnSeries;
     }
 
     @Override
     public TimeSeries<LocalDate, Double> getHumanCapitalDevelopment(Investor investor, double discountRate) {
-        double[] discountedAnnualNetIncomesArray = getDiscountedAnnualNetIncomes(investor, discountRate);
-        List<Double> discountedAnnualIncomes = new LinkedList<Double>();
-        for(double number : discountedAnnualNetIncomesArray){
-            discountedAnnualIncomes.add(number);
-        }
+        List<Double> discountedAnnualIncomes = getDiscountedAnnualNetIncomes(investor, discountRate);
 
-        TimeSeries<LocalDate, Double> returnSeries = new TimeSeries<>();
         LocalDate currentDate = LocalDate.now();
+        TimeSeries<LocalDate, Double> returnSeries = new TimeSeries<>();
 
-        for(int i = 0; i < discountedAnnualIncomes.size(); i++){
+        while(!discountedAnnualIncomes.isEmpty()){
             double accDiscountedIncomes = discountedAnnualIncomes
                     .stream()
                     .reduce(0.0, (subtotal, d) -> subtotal + d);
@@ -60,17 +58,21 @@ public class InvestorService implements IInvestorService {
         return returnSeries;
     }
 
-    private double[] getDiscountedAnnualNetIncomes(Investor investor, double discountRate){
+    private List<Double> getDiscountedAnnualNetIncomes(Investor investor, double discountRate){
         int yearsUntilRetirement = investor.getPlannedRetirementAge() - investor.getAge();
         double[] discountedAnnualNetIncomes = new double[yearsUntilRetirement];
         double annualIncomeIncreaseRate = investor.getAnnualIncomeIncreaseRate();
 
         double annualIncome = investor.getCurrentAnnualNetIncome();
-
         for (int i = 0; i < yearsUntilRetirement; i++) {
             discountedAnnualNetIncomes[i] = annualIncome / Math.pow((1 + discountRate), i);
             annualIncome = annualIncome * (1 + annualIncomeIncreaseRate);
         }
-        return discountedAnnualNetIncomes;
+
+        List<Double> discountedAnnualIncomes = new LinkedList<Double>();
+        for(double number : discountedAnnualNetIncomes){
+            discountedAnnualIncomes.add(number);
+        }
+        return discountedAnnualIncomes;
     }
 }
