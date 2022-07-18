@@ -56,7 +56,8 @@ public class InvestorService implements IInvestorService {
         while(!discountedAnnualIncomes.isEmpty()){
             double accDiscountedIncomes = discountedAnnualIncomes
                     .stream()
-                    .reduce(0.0, (subtotal, d) -> subtotal + d);
+                    .mapToDouble((d) -> d)
+                    .sum();
 
             returnSeries.addDataPoint(new TimeSeriesDataPoint<>(currentDate, accDiscountedIncomes));
 
