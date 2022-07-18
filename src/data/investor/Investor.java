@@ -1,8 +1,9 @@
 package data.investor;
 
 import java.time.LocalDate;
+import java.time.Period;
 
-public class Investor extends Person{
+public class Investor extends Person {
     private final double currentAnnualNetIncome;
     private final double annualIncomeIncreaseRate;
     private final double monthlySavingRate;
@@ -11,8 +12,15 @@ public class Investor extends Person{
 
     private Investor(String firstname, String lastname, LocalDate birthday, double currentAnnualNetIncome,
                      double annualIncomeIncreaseRate, double monthlySavingRate, double currentInvestableCapital,
-                     int plannedRetirementAge){
+                     int plannedRetirementAge) {
         super(firstname, lastname, birthday);
+        if(currentAnnualNetIncome < 0.0 || annualIncomeIncreaseRate < 0.0 ||
+                monthlySavingRate < 0.0 || currentInvestableCapital < 0.0){
+            throw new IllegalArgumentException("Income and Investment figures must not be negativ");
+        }
+        if (this.getAge() >= plannedRetirementAge){
+            throw new IllegalArgumentException("The plannedRetirementAge must not be smaller than the age of the instance");
+        }
         this.currentAnnualNetIncome = currentAnnualNetIncome;
         this.annualIncomeIncreaseRate = annualIncomeIncreaseRate;
         this.monthlySavingRate = monthlySavingRate;
@@ -20,11 +28,11 @@ public class Investor extends Person{
         this.plannedRetirementAge = plannedRetirementAge;
     }
 
-    public double getCurrentAnnualNetIncome(){
+    public double getCurrentAnnualNetIncome() {
         return this.currentAnnualNetIncome;
     }
 
-    public double getAnnualIncomeIncreaseRate(){
+    public double getAnnualIncomeIncreaseRate() {
         return this.annualIncomeIncreaseRate;
     }
 
@@ -40,11 +48,11 @@ public class Investor extends Person{
         return plannedRetirementAge;
     }
 
-    public static InvestorBuilder builder(){
+    public static InvestorBuilder builder() {
         return new InvestorBuilder();
     }
 
-    public static class InvestorBuilder{
+    public static class InvestorBuilder {
         private String firstname;
         private String lastname;
         private LocalDate birthday;
@@ -54,49 +62,50 @@ public class Investor extends Person{
         private double currentInvestableCapital;
         private int plannedRetirementAge;
 
-        private InvestorBuilder() {}
+        private InvestorBuilder() {
+        }
 
-        public InvestorBuilder firstname(String firstname){
+        public InvestorBuilder firstname(String firstname) {
             this.firstname = firstname;
             return this;
         }
 
-        public InvestorBuilder lastname(String lastname){
+        public InvestorBuilder lastname(String lastname) {
             this.lastname = lastname;
             return this;
         }
 
-        public InvestorBuilder birthday(LocalDate birthday){
+        public InvestorBuilder birthday(LocalDate birthday) {
             this.birthday = birthday;
             return this;
         }
 
-        public InvestorBuilder currentAnnualNetIncome(double currentAnnualNetIncome){
+        public InvestorBuilder currentAnnualNetIncome(double currentAnnualNetIncome) {
             this.currentAnnualNetIncome = currentAnnualNetIncome;
             return this;
         }
 
-        public InvestorBuilder annualIncomeIncreaseRate(double annualIncomeIncreaseRate){
+        public InvestorBuilder annualIncomeIncreaseRate(double annualIncomeIncreaseRate) {
             this.annualIncomeIncreaseRate = annualIncomeIncreaseRate;
             return this;
         }
 
-        public InvestorBuilder monthlySavingRate(double monthlySavingRate){
+        public InvestorBuilder monthlySavingRate(double monthlySavingRate) {
             this.monthlySavingRate = monthlySavingRate;
             return this;
         }
 
-        public InvestorBuilder currentInvestableCapital(double currentInvestableCapital){
+        public InvestorBuilder currentInvestableCapital(double currentInvestableCapital) {
             this.currentInvestableCapital = currentInvestableCapital;
             return this;
         }
 
-        public InvestorBuilder plannedRetirementAge(int plannedRetirementAge){
+        public InvestorBuilder plannedRetirementAge(int plannedRetirementAge) {
             this.plannedRetirementAge = plannedRetirementAge;
             return this;
         }
 
-        public Investor build(){
+        public Investor build() {
             return new Investor(this.firstname, this.lastname, this.birthday, this.currentAnnualNetIncome, this.annualIncomeIncreaseRate,
                     this.monthlySavingRate, this.currentInvestableCapital, this.plannedRetirementAge);
         }

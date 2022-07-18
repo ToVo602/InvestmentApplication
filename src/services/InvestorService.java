@@ -9,11 +9,19 @@ import utils.InvestorServices;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InvestorService implements IInvestorService {
 
     @Override
     public TimeSeries<LocalDate, Double> getAssetVolumeDevelopment(Investor investor, double estimatedAnnualReturn) {
+        if(investor == null){
+            throw new NullPointerException("investor must not be null");
+        }
+        if(estimatedAnnualReturn > 1 || estimatedAnnualReturn < 0){
+            throw new IllegalArgumentException("estimatedAnnualReturn must be between 0 and 1 (inclusive)");
+        }
+
         double monthlyReturn = InvestorServices.convertAnnualIntoMonthlyReturnRate(estimatedAnnualReturn);
         int yearsUntilRetirement = investor.getPlannedRetirementAge() - investor.getAge();
         double annualIncomeIncreaseRate = investor.getAnnualIncomeIncreaseRate();
@@ -53,6 +61,10 @@ public class InvestorService implements IInvestorService {
             returnSeries.addDataPoint(new TimeSeriesDataPoint<>(currentDate, accDiscountedIncomes));
 
             currentDate = currentDate.plusYears(1L);
+            discountedAnnualIncomes = discountedAnnualIncomes
+                    .stream()
+                    .map((d) -> d * (1 + discountRate))
+                    .collect(Collectors.toList());
             discountedAnnualIncomes.remove(0);
         }
         return returnSeries;
